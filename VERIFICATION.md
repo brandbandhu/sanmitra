@@ -1,16 +1,14 @@
-﻿# Verification results
+﻿# Database-free website verification
 
-- TypeScript: `npx tsc --noEmit` passed.
-- Production: `npm run build` passed (client and server output).
-- Unit/routes: `npm test` passed, 16 tests in 2 files.
-- Desktop/mobile browsers: `npx playwright test` passed, 16 tests across Microsoft Edge desktop and mobile viewports.
+- `npm run typecheck`: passed.
+- `npm test`: 15 tests passed across route and calculator suites.
+- `npm run build`: client and server production builds passed.
+- `npm run test:e2e`: 16 desktop/mobile browser tests passed.
 
-Browser coverage includes all public routes and unique titles, horizontal overflow, hero controls, mobile navigation, roof-area-constrained estimates, calculator-to-enquiry transfer, form validation, backend error/success UI, project filters and details, article details, gallery dialog, and authorized admin create/edit/delete/publication flows.
+Verified page routing and titles, responsive overflow checks, hero controls, calculator-to-enquiry requirements, validated enquiry file downloads, project filters/details, article content, gallery dialogs and public pages with database endpoints blocked.
 
-Browser enquiry and administrator tests use mocked API sessions/responses. They do not create real customer or content records. Production administrator credentials were unavailable, so authenticated production writes are not verified. Public `projects` and `site_settings` reads returned HTTP 200; one local `services` read timed out.
+No Supabase REST/auth requests occurred in the database-free browser checks. The 21 compiled client JavaScript files contain no Supabase host, REST/auth endpoint or Supabase client initialization references. The compiled server library output contains no Supabase, Postgres or Drizzle library bundles.
 
-Screenshots are available in `test-results/website-captures-homepage-and-calculator-desktop/` and the corresponding mobile directory after running the browser suite.
+The database-backed admin page, enquiry inserts, public database queries and authentication middleware have been removed. The Drizzle command configuration was removed. Existing Lovable-managed generated integration and schema/migration files remain unchanged and inactive, per the repository instructions. No hosted database or remote records were deleted.
 
-The implementation fixed a real nested-route issue: detail-page links changed the URL while retaining the collection page. The `projects_.$slug`, `blog_.$slug`, and `services_.$slug` routes now render independently.
-
-See README.md for integration limits and local startup. No deployment or remote push was performed.
+The enquiry form uses configured WhatsApp/email details, or downloads a text file if no company contact destination is configured. It does not claim a message was delivered or stored.

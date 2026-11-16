@@ -1,65 +1,51 @@
 ﻿# Sanmitra Solar
 
-A responsive solar website built on the existing React 19 / TypeScript / TanStack Start project. The design uses Overlock hero headings, Outfit section headings, Poppins body text, deep navy, solar orange and energy teal, with the supplied installation imagery.
+A standalone React / TypeScript / TanStack Start solar website. It uses Overlock for hero headings, Outfit for section headings and Poppins for body text, with responsive layouts, GSAP motion, a branded preloader and floating social icons.
 
-## Local development
+## Run locally
 
 ```sh
 npm install
-# Copy .env.example to .env and configure your Supabase connection first.
 npm run dev
 ```
 
-Open the address printed by Vite. The default local address is http://localhost:5173. The existing `.env` supplies the public Supabase connection; keep private credentials in Lovable Secrets, never in this repository.
+No database connection, account or environment credentials are needed.
 
-## Pages and functionality
+## Edit content
 
-- Cinematic three-slide homepage with pause, previous/next controls and reduced-motion support.
-- About, services, residential/commercial/industrial pathways, projects and project details, gallery with accessible image dialog, articles and article details, calculator, contact and admin pages.
-- GSAP ScrollTrigger reveals, photo masking, solar energy flow and verified company counters when configured.
-- Interactive savings calculator with bill, tariff, property, roof area and location. Requirements transfer to the enquiry form.
-- Validated enquiries saved to `contact_requests`, with loading, failure and success states.
-- Supabase administrator sign-in and `has_role` authorization. Content management supports add/edit/delete, draft/publication controls, enquiry status and CSV export.
-- Public contact details, WhatsApp, social links, logo, hero image/title and verified company metrics are configured through website settings.
-- Unique page metadata, canonical links, organization structured data, sitemap and robots.txt.
+- `src/lib/site-content.ts`: approved services, projects, articles, gallery, testimonials and public company settings.
+- `src/lib/social-links.ts`: Instagram, Facebook and WhatsApp defaults.
+- `src/lib/solar-articles.ts`: introductory solar guides.
+- `src/components/solar-experience.tsx`: labelled project concepts and hero slides.
 
-## Content rules
+Empty collections use clearly labelled concepts and introductory guides. Company achievements and customer reviews are not fabricated.
 
-The included project concepts and gallery imagery are clearly marked illustrative. They are not claims of completed Sanmitra Solar installations. Introductory articles are general preparation guides. Customer reviews and company achievements are shown only when the team publishes them. Empty project/review datasets are handled without invented achievements.
+## Enquiries
 
-## Backend and remaining integration
+The form validates input without storing it. A configured company WhatsApp number opens WhatsApp with the enquiry text; otherwise a configured email opens the visitor's email application. When neither is configured, the visitor downloads a text file to share manually. A prepared or downloaded enquiry is never described as delivered.
 
-The project uses its existing Lovable-managed Supabase/PostgreSQL backend. No MySQL or Express backend is claimed. No generated integration files or database schema/migrations were edited.
+## Database removal
 
-The connected Lovable app currently returns `reauthentication required`. The following require the owner to reconnect Lovable and complete managed configuration:
+All active Supabase reads, enquiry inserts and authentication middleware have been disconnected. The database-backed admin dashboard and its route have been removed. Public pages use local content; the savings calculator runs entirely in the browser.
 
-1. Provision a photo upload bucket with administrator-only write policies and connect a direct upload control. The current editors accept hosted image URLs.
-2. Add dedicated service/article SEO columns and per-project multi-image galleries if separate editable fields are needed. Existing page metadata is generated from the route; article excerpts are editable.
-3. Create or select an administrator account and assign the existing `admin` role through Lovable. Administrator credentials were not supplied; authenticated production writes have not been verified.
-4. Set verified company contact details, WhatsApp number, social links, approved customer reviews and actual company/project figures. Until then, the floating contact action opens the enquiry form.
-5. Confirm the production domain before publishing; canonical URLs and sitemap currently use the existing `sanmitra-sunshine-hub.lovable.app` address.
+Lovable-managed generated integration files and the original schema/migration files are retained unchanged under the project instructions. They are inactive and are not part of the website runtime. No hosted database or existing remote records were deleted.
 
-Source is prepared for GitHub. Production deployment and synchronization into the original Lovable project are separate steps.
-
-## Verification
+## Checks
 
 ```sh
-npx tsc --noEmit
+npm run typecheck
 npm test
 npm run build
 ```
 
-Browser checks use Microsoft Edge installed on Windows:
+For desktop and mobile browser checks, start the local server at port 5173, then run:
 
 ```sh
-npm run dev -- --host 127.0.0.1 --port 5173
-npx playwright test
+npm run test:e2e
 ```
 
-Browser enquiry tests intercept backend responses and create no customer records. They verify the request payload, validation, failures and success rendering. Public backend reads were checked separately; complete authenticated database behavior still needs an owner account.
+Browser checks use the installed Microsoft Edge. They cover page routing, responsive layouts, hero controls, calculator handoff, enquiry downloads, project filters, article details, gallery dialogs and operation without database network calls.
 
-The existing calculator test mixed rupees with kilowatt-hours; its expected system size has been corrected to use 500 kWh for a ₹5,000 bill, 80% offset and ₹8/kWh tariff.
+## Hosting
 
-## Typography and social controls
-
-The branded first-load preloader waits briefly for fonts and clears within a bounded time. It respects reduced motion and does not repeat during internal navigation. Floating Instagram, Facebook and WhatsApp icons use verified values from website settings; local public defaults can be entered in `src/lib/social-links.ts`. Unconfigured accounts show a Coming soon tooltip and do not open invented profiles.
+The existing production domain is used for canonical URLs and the sitemap. Update it before publishing under a new domain. Uploading source to GitHub does not deploy the website.

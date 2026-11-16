@@ -27,7 +27,6 @@ describe("App routing", () => {
     "/blog/prepare-your-roof-for-solar",
     "/calculator",
     "/contact",
-    "/admin",
   ])("matches %s to a content route", (path) => {
     const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
     expect(router.matchRoutes(path).at(-1)?.routeId).not.toBe(rootRouteId);

@@ -37,7 +37,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { supabase } from "@/integrations/supabase/client";
 import { estimateSolarSavings, SOLAR_ASSUMPTIONS } from "@/lib/solar-estimates";
 import homeSolar from "@/assets/sanmitra-home-solar.jpg";
 import rooftopSolar from "@/assets/solar-rooftop-editorial.jpg";
@@ -169,7 +168,6 @@ export function SiteFooter() {
           <div className="mt-3 grid gap-2 text-xs text-primary-foreground/80">
             <Link to="/calculator">Estimate your solar potential</Link>
             <Link to="/contact">Request a conversation</Link>
-            <Link to="/admin">Site administrator</Link>
             {Object.entries(settings?.["social"] ?? {})
               .filter(([, value]) => typeof value === "string" && /^https:\/\//.test(value))
               .map(([name, url]) => (
@@ -1424,6 +1422,14 @@ export function ContactPage({
 }) {
   const { data: settings } = useSiteSettings();
   const publicContact = settings?.["contact"];
+  const configuredNumber = String(publicContact?.["whatsapp"] ?? "").replace(/\D/g, "");
+  const whatsappNumber = /^[1-9]\d{9,14}$/.test(configuredNumber) ? configuredNumber : "";
+  const contactEmail = String(publicContact?.["email"] ?? "");
+  const enquiryAction = whatsappNumber
+    ? "Send via WhatsApp"
+    : contactEmail
+      ? "Send by email"
+      : "Download enquiry";
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [formError, setFormError] = useState("");
@@ -1454,23 +1460,45 @@ export function ContactPage({
       return;
     }
     setSubmitting(true);
-    let error: unknown;
+    const details = [
+      "Sanmitra Solar enquiry",
+      "Name: " + parsed.data.name,
+      "Email: " + parsed.data.email,
+      "Phone: " + parsed.data.phone,
+      "Interest: " + parsed.data.service_interest,
+      "Monthly bill: " + (parsed.data.monthly_bill ?? "Not supplied"),
+      "",
+      parsed.data.message,
+    ].join("\n");
     try {
-      const result = await supabase.from("contact_requests").insert({
-        ...parsed.data,
-        phone: parsed.data.phone || null,
-        service_interest: parsed.data.service_interest || null,
-      });
-      error = result.error;
-    } catch (cause) {
-      error = cause;
-    } finally {
+      if (whatsappNumber) {
+        window.open(
+          "https://wa.me/" + whatsappNumber + "?text=" + encodeURIComponent(details),
+          "_blank",
+          "noopener,noreferrer",
+        );
+      } else if (contactEmail) {
+        window.location.href =
+          "mailto:" +
+          contactEmail +
+          "?subject=" +
+          encodeURIComponent("Solar enquiry from " + parsed.data.name) +
+          "&body=" +
+          encodeURIComponent(details);
+      } else {
+        const url = URL.createObjectURL(new Blob([details], { type: "text/plain;charset=utf-8" }));
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "sanmitra-solar-enquiry.txt";
+        link.click();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+    } catch {
+      setFormError("Your enquiry could not be prepared. Please try again.");
       setSubmitting(false);
-    }
-    if (error) {
-      setFormError("We couldn’t save your request just now. Please try again in a moment.");
       return;
     }
+    setSubmitting(false);
     setSubmitted(true);
   }
 
@@ -1513,7 +1541,11 @@ export function ContactPage({
               Your enquiry
             </p>
             <p className="mt-3 text-sm leading-6 text-muted-foreground">
-              Your message is saved securely in the Sanmitra Solar enquiry inbox.
+              {whatsappNumber
+                ? "Prepare your enquiry and continue in WhatsApp."
+                : contactEmail
+                  ? "Prepare your enquiry in your email application."
+                  : "Download your enquiry details as a text file to share with the team."}
             </p>
           </div>
         </div>
@@ -1522,11 +1554,14 @@ export function ContactPage({
             <span className="success-icon">
               <Check size={19} />
             </span>
-            <p className="eyebrow">Request saved</p>
+            <p className="eyebrow">
+              {whatsappNumber || contactEmail ? "Enquiry prepared" : "Enquiry downloaded"}
+            </p>
             <h2 className="mt-4 font-display text-3xl font-semibold">Thank you, {name}.</h2>
             <p className="mt-3 leading-7 text-muted-foreground">
-              Your enquiry is in Sanmitra Solar’s contact inbox. This page does not send email
-              notifications.
+              {whatsappNumber || contactEmail
+                ? "Your message is ready. Complete sending it in the application that opened."
+                : "Your enquiry file is ready to share. No message has been sent automatically."}
             </p>
             <Button
               variant="outline"
@@ -1539,7 +1574,7 @@ export function ContactPage({
                 setMessage("");
               }}
             >
-              Send another enquiry
+              Prepare another enquiry
             </Button>
           </div>
         ) : (
@@ -1642,11 +1677,12 @@ export function ContactPage({
               </p>
             )}
             <Button type="submit" size="lg" disabled={submitting} className="mt-7 rounded-sm px-6">
-              {submitting ? "Saving your request…" : "Send your enquiry"}
+              {submitting ? "Preparing?" : enquiryAction}
               <ArrowRight size={15} />
             </Button>
             <p className="mt-4 text-xs leading-5 text-muted-foreground">
-              By submitting, you’re asking Sanmitra Solar to contact you about this enquiry.
+              Your details are used only to prepare this enquiry. They are not stored by this
+              website.
             </p>
           </form>
         )}

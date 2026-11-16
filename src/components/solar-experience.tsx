@@ -1,46 +1,26 @@
 import { FloatingSocials } from "./floating-socials";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, Pause, Play, Sun } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import type { Tables } from "@/integrations/supabase/types";
+import {
+  SITE_CONTENT,
+  SITE_SETTINGS,
+  type SiteContentMap,
+  type SolarProject,
+} from "@/lib/site-content";
 import homeSolar from "@/assets/sanmitra-home-solar.jpg";
 import rooftopSolar from "@/assets/solar-rooftop-editorial.jpg";
 
-export function usePublished<
-  T extends "projects" | "services" | "blog_posts" | "testimonials" | "gallery_items",
->(table: T) {
-  return useQuery({
-    queryKey: ["published", table],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from(table as "projects" | "services" | "blog_posts" | "testimonials" | "gallery_items")
-        .select("*")
-        .eq("published", true)
-        .order("created_at", { ascending: false });
-      if (error) throw new Error("Content could not be loaded. Please try again.");
-      return data as Tables<T>[];
-    },
-    retry: 1,
-    staleTime: 60_000,
-  });
+export function usePublished<T extends keyof SiteContentMap>(table: T) {
+  return {
+    data: SITE_CONTENT[table],
+    isPending: false,
+    isError: false,
+    refetch: async () => ({ data: SITE_CONTENT[table] }),
+  };
 }
 export function useSiteSettings() {
-  return useQuery({
-    queryKey: ["site-settings"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("site_settings")
-        .select("setting_key,setting_value");
-      if (error) throw error;
-      return Object.fromEntries(
-        (data ?? []).map((row) => [row.setting_key, row["setting_value"]]),
-      ) as Record<string, Record<string, unknown>>;
-    },
-    retry: 1,
-    staleTime: 60_000,
-  });
+  return { data: SITE_SETTINGS };
 }
 const defaultSlides = [
   {
@@ -210,7 +190,7 @@ export function CinematicHero() {
     </section>
   );
 }
-export const demoProjects: Tables<"projects">[] = [
+export const demoProjects: SolarProject[] = [
   {
     id: "demo-home",
     slug: "concept-courtyard-home",
