@@ -1,5 +1,5 @@
 ﻿import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
 import { estimateSolarSavings } from "@/lib/solar-estimates";
 export function HomeSavings() {

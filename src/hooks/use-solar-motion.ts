@@ -1,10 +1,10 @@
 ﻿import { useEffect } from "react";
-import { useLocation } from "@tanstack/react-router";
+import { useLocation } from "react-router";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export function useSolarMotion() {
-  const pathname = useLocation({ select: (location) => location.pathname });
+  const { pathname } = useLocation();
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     let disposed = false;

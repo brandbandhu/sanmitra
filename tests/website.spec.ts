@@ -37,10 +37,12 @@ test("public routes render unique titles with no horizontal overflow", async ({ 
 test("hero controls and mobile navigation work", async ({ page, isMobile }) => {
   await page.goto("/");
   await page.locator('html[data-hydrated="true"]').waitFor();
-  await page.getByRole("button", { name: "Show slide 2: Commercial solar" }).click();
-  await expect(page.locator("h1")).toContainText("Smarter Energy");
-  await page.getByRole("button", { name: "Next slide", exact: true }).click();
-  await expect(page.locator("h1")).toContainText("Future Runs");
+  const night = page.getByRole("button", { name: /Night/ });
+  const morning = page.getByRole("button", { name: /Morning/ });
+  await night.click();
+  await expect(night).toHaveAttribute("aria-pressed", "true");
+  await morning.click();
+  await expect(morning).toHaveAttribute("aria-pressed", "true");
   if (isMobile) {
     await page.getByRole("button", { name: "Open navigation menu" }).click();
     await page
@@ -107,7 +109,6 @@ test("gallery dialog closes with Escape and returns focus", async ({ page }) => 
 test("captures homepage and calculator", async ({ page }, info) => {
   await page.goto("/");
   await page.locator('html[data-hydrated="true"]').waitFor();
-  await page.getByRole("button", { name: "Pause slideshow" }).click();
   await page.screenshot({ path: info.outputPath("homepage.png"), fullPage: true });
   await page.goto("/calculator");
   await page.locator('html[data-hydrated="true"]').waitFor();

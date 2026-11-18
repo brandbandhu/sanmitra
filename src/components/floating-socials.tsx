@@ -1,4 +1,4 @@
-﻿import { Link } from "@tanstack/react-router";
+﻿import { Link } from "react-router";
 import { ArrowRight, Facebook, Instagram } from "lucide-react";
 import { SOCIAL_LINKS } from "@/lib/social-links";
 

@@ -1,6 +1,6 @@
 import { FloatingSocials } from "./floating-socials";
 import { useEffect, useRef, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router";
 import { ArrowLeft, ArrowRight, Pause, Play, Sun } from "lucide-react";
 import {
   SITE_CONTENT,
@@ -8,7 +8,7 @@ import {
   type SiteContentMap,
   type SolarProject,
 } from "@/lib/site-content";
-import homeSolar from "@/assets/sanmitra-home-solar.jpg";
+import { homeSolar } from "@/lib/solar-images";
 import rooftopSolar from "@/assets/solar-rooftop-editorial.jpg";
 
 export function usePublished<T extends keyof SiteContentMap>(table: T) {
@@ -277,8 +277,7 @@ export function ProjectShowcase({ compact = false }: { compact?: boolean }) {
         {filtered.map((project) => (
           <Link
             key={project.id}
-            to="/projects/$slug"
-            params={{ slug: project["slug"] }}
+            to={`/projects/${encodeURIComponent(project["slug"])}`}
             className="project-card"
           >
             <figure>

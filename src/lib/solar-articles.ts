@@ -1,4 +1,4 @@
-import homeSolar from "@/assets/sanmitra-home-solar.jpg";
+import { homeSolar } from "@/lib/solar-images";
 import rooftopSolar from "@/assets/solar-rooftop-editorial.jpg";
 export const starterArticles = [
   {

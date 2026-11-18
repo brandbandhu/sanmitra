@@ -2,7 +2,7 @@ import { AboutSolarStory } from "./about-solar-story";
 import { HomeSavings } from "./home-savings";
 import { starterArticles } from "@/lib/solar-articles";
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router";
 import {
   ArrowDown,
   ArrowDownRight,
@@ -38,7 +38,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { estimateSolarSavings, SOLAR_ASSUMPTIONS } from "@/lib/solar-estimates";
-import homeSolar from "@/assets/sanmitra-home-solar.jpg";
+import { homeSolar } from "@/lib/solar-images";
 import rooftopSolar from "@/assets/solar-rooftop-editorial.jpg";
 import { LumenRoofHero } from "@/components/lumen-roof-hero";
 import { HomeContactPopup } from "@/components/home-contact-popup";
@@ -407,8 +407,7 @@ function SolutionPanel({
 }) {
   return (
     <Link
-      to="/solutions/$slug"
-      params={{ slug: to.split("/").pop()! }}
+      to={to}
       className="solution-panel group"
     >
       <img
@@ -708,8 +707,7 @@ export function ServicesPage() {
         {listed.map((item, i) => (
           <Link
             key={item.slug}
-            to="/services/$slug"
-            params={{ slug: item.slug }}
+            to={`/services/${encodeURIComponent(item.slug)}`}
             className="pathway-row"
           >
             <span className="pathway-number">0{i + 1}</span>
@@ -778,7 +776,7 @@ export function ServiceDetailPage({ slug }: { slug: string }) {
             ))}
           </ul>
           <Button asChild className="mt-8 rounded-sm">
-            <Link to="/contact" search={{ service: solution.title }}>
+            <Link to={{ pathname: "/contact", search: new URLSearchParams({ service: solution.title }).toString() }}>
               Ask about {solution.title.toLowerCase()} <ArrowRight size={15} />
             </Link>
           </Button>
@@ -1046,8 +1044,7 @@ export function BlogPage() {
           {posts.map((post) => (
             <Link
               key={post.id}
-              to="/blog/$slug"
-              params={{ slug: post.slug }}
+              to={`/blog/${encodeURIComponent(post.slug)}`}
               className="editorial-post"
             >
               <img
@@ -1325,23 +1322,25 @@ export function CalculatorPage() {
             className="mt-7 w-full rounded-sm bg-brand-orange text-brand-ink hover:bg-brand-orange/90"
           >
             <Link
-              to="/contact"
-              search={{
-                bill: String(bill),
-                service:
-                  property === "Home"
-                    ? "Residential solar"
-                    : property === "Business"
-                      ? "Commercial solar"
-                      : "Industrial solar",
-                estimate: JSON.stringify({
-                  location,
-                  area,
-                  tariff,
-                  systemSizeKw: size,
-                  monthlyGenerationKwh: actual?.monthlyGenerationKwh,
-                  annualSavingsInr: actual?.annualSavingsInr,
-                }),
+              to={{
+                pathname: "/contact",
+                search: new URLSearchParams({
+                  bill: String(bill),
+                  service:
+                    property === "Home"
+                      ? "Residential solar"
+                      : property === "Business"
+                        ? "Commercial solar"
+                        : "Industrial solar",
+                  estimate: JSON.stringify({
+                    location,
+                    area,
+                    tariff,
+                    systemSizeKw: size,
+                    monthlyGenerationKwh: actual?.monthlyGenerationKwh,
+                    annualSavingsInr: actual?.annualSavingsInr,
+                  }),
+                }).toString(),
               }}
             >
               Get a personalized assessment <ArrowRight size={15} />

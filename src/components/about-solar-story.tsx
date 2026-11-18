@@ -1,4 +1,4 @@
-﻿import { Link } from "@tanstack/react-router";
+﻿import { Link } from "react-router";
 import { ArrowRight, Check } from "lucide-react";
 import rooftopSolar from "@/assets/solar-rooftop-editorial.jpg";
 

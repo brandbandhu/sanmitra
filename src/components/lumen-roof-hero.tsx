@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router";
 import { ArrowDownRight } from "lucide-react";
 
 const images = {
@@ -21,7 +21,11 @@ float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h
 float fbm(vec2 p){float a=.5,s=0.;mat2 m=mat2(1.6,1.2,-1.2,1.6);p=mat2(.8,.6,-.6,.8)*p+5.3;for(int i=0;i<5;i++){s+=a*n(p);p=m*p;a*=.5;}return s;}
 void main(){vec2 uv=gl_FragCoord.xy/R;uv.y=1.-uv.y;float asp=R.x/R.y;vec2 p=vec2(uv.x*asp,uv.y);float t=T*.05;vec2 w=vec2(fbm(p*1.3+vec2(t,-t*.6)),fbm(p*1.3+vec2(-t*.8,t)+7.));float d=fbm(p*1.9+w*1.7+vec2(t*1.6,-t*1.1+S*.5));float e=fbm(p*.9-w+vec2(-t,t*.5)+3.);float low=smoothstep(.70,1.04,uv.y+(d-.5)*.34);float side=sm(.2,.0,uv.x+(e-.5)*.28)+sm(.8,1.,uv.x+(e-.5)*.28);side*=smoothstep(.25,.6,uv.y)*.2;float wisps=smoothstep(.5,.78,d)*smoothstep(.22,.5,uv.y)*sm(.86,.6,uv.y)*.18;float rest=clamp(low+side+wisps,0.,1.);float front=1.02-S*.68;float rise=smoothstep(front-.02,front+.26,uv.y+(d-.5)*.5);float haze=S*(.3+.46*d);float a=clamp(max(rest,max(rise*.97,haze)),0.,1.);vec3 dayA=vec3(.97,.93,.84),dayB=vec3(.79,.78,.71),nightA=vec3(.40,.45,.57),nightB=vec3(.15,.19,.29);vec3 c=mix(mix(dayB,dayA,d*1.15),mix(nightB,nightA,d*1.1),K);float porch=exp(-dot((uv-vec2(.72,.74))*vec2(1.7,2.6),(uv-vec2(.72,.74))*vec2(1.7,2.6))*3.2);c=mix(c,vec3(.86,.55,.27),K*porch*.42*(1.-S));O=vec4(c*a,a);}`;
 
-type GLState = { gl: WebGL2RenderingContext; program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> };
+type GLState = {
+  gl: WebGL2RenderingContext;
+  program: WebGLProgram;
+  uniforms: Record<"R" | "T" | "S" | "K", WebGLUniformLocation | null>;
+};
 
 export function LumenRoofHero() {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -52,7 +56,16 @@ export function LumenRoofHero() {
     gl.attachShader(program, vs); gl.attachShader(program, fs); gl.linkProgram(program);
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) { console.error(gl.getProgramInfoLog(program)); return; }
     gl.useProgram(program);
-    glState.current = { gl, program, uniforms: Object.fromEntries(["R", "T", "S", "K"].map((name) => [name, gl.getUniformLocation(program, name)])) };
+    glState.current = {
+      gl,
+      program,
+      uniforms: {
+        R: gl.getUniformLocation(program, "R"),
+        T: gl.getUniformLocation(program, "T"),
+        S: gl.getUniformLocation(program, "S"),
+        K: gl.getUniformLocation(program, "K"),
+      },
+    };
     return () => { glState.current = null; gl.deleteProgram(program); gl.deleteShader(vs); gl.deleteShader(fs); };
   }, []);
 

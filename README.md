@@ -1,6 +1,6 @@
 ﻿# Sanmitra Solar
 
-A standalone React / TypeScript / TanStack Start solar website. It uses Overlock for hero headings, Outfit for section headings and Poppins for body text, with responsive layouts, GSAP motion, a branded preloader and floating social icons.
+A standalone React / TypeScript / Vite solar website. It uses Overlock for hero headings, Outfit for section headings and Poppins for body text, with responsive layouts, GSAP motion, a branded preloader and floating social icons.
 
 ## Run locally
 
@@ -48,4 +48,4 @@ Browser checks use the installed Microsoft Edge. They cover page routing, respon
 
 ## Hosting
 
-The existing production domain is used for canonical URLs and the sitemap. Update it before publishing under a new domain. Uploading source to GitHub does not deploy the website.
+On Vercel, use the Vite framework preset and default build settings. The build uses Vercel?s production project URL for canonical URLs and the homepage share preview. Set `VITE_SITE_URL` to your public origin if you use a custom domain, and update the URLs in `public/sitemap.xml` and `public/robots.txt` when changing domains.
