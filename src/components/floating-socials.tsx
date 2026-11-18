@@ -64,37 +64,39 @@ export function FloatingSocials({
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
-      <aside className="floating-socials" aria-label="Connect with Sanmitra Solar">
-        {socials.map((item) =>
-          item.href ? (
-            <a
-              key={item.name}
-              className={`social-icon ${item.className}`}
-              href={item.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Sanmitra Solar on ${item.name} (opens in a new tab)`}
-            >
-              <span className="social-tooltip">{item.name}</span>
-              {item.icon}
-            </a>
-          ) : (
-            <button
-              key={item.name}
-              className={`social-icon ${item.className} is-unconfigured`}
-              type="button"
-              aria-disabled="true"
-              aria-label={`${item.name} — profile coming soon`}
-            >
-              <span className="social-tooltip">{item.name} · Coming soon</span>
-              {item.icon}
-            </button>
-          ),
-        )}
-      </aside>
-      <Link to="/contact" className="mobile-quote">
-        Get a free solar consultation <ArrowRight size={17} />
-      </Link>
+      <div className="mobile-action-bar">
+        <Link to="/contact" className="mobile-quote">
+          Get a free solar consultation <ArrowRight size={17} />
+        </Link>
+        <aside className="floating-socials" aria-label="Connect with Sanmitra Solar">
+          {socials.map((item) =>
+            item.href ? (
+              <a
+                key={item.name}
+                className={`social-icon ${item.className}`}
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Sanmitra Solar on ${item.name} (opens in a new tab)`}
+              >
+                <span className="social-tooltip">{item.name}</span>
+                {item.icon}
+              </a>
+            ) : (
+              <button
+                key={item.name}
+                className={`social-icon ${item.className} is-unconfigured`}
+                type="button"
+                aria-disabled="true"
+                aria-label={`${item.name} — profile coming soon`}
+              >
+                <span className="social-tooltip">{item.name} · Coming soon</span>
+                {item.icon}
+              </button>
+            ),
+          )}
+        </aside>
+      </div>
     </>
   );
 }

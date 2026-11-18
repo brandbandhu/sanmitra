@@ -40,6 +40,8 @@ import {
 import { estimateSolarSavings, SOLAR_ASSUMPTIONS } from "@/lib/solar-estimates";
 import homeSolar from "@/assets/sanmitra-home-solar.jpg";
 import rooftopSolar from "@/assets/solar-rooftop-editorial.jpg";
+import { LumenRoofHero } from "@/components/lumen-roof-hero";
+import { HomeContactPopup } from "@/components/home-contact-popup";
 
 const navItems = [
   { label: "Our approach", to: "/about" as const },
@@ -207,7 +209,7 @@ function PageFrame({ children, inverse = false }: { children: ReactNode; inverse
 export function HomePage() {
   return (
     <PageFrame inverse>
-      <CinematicHero />
+      <LumenRoofHero />
 
       <AboutSolarStory />
 
@@ -363,7 +365,7 @@ export function HomePage() {
         </Accordion>
       </section>
 
-      <section className="cta-band">
+      <section className="cta-band" id="home-contact-cta">
         <div className="site-wrap flex flex-col items-start justify-between gap-8 py-10 md:flex-row md:items-center md:py-14">
           <div>
             <p className="eyebrow eyebrow-light">A thoughtful next step</p>
@@ -385,6 +387,7 @@ export function HomePage() {
           </Button>
         </div>
       </section>
+      <HomeContactPopup />
     </PageFrame>
   );
 }
