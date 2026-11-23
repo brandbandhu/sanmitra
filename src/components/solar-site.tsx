@@ -1,5 +1,6 @@
 import { AboutSolarStory } from "./about-solar-story";
 import { HomeSavings } from "./home-savings";
+import { BUSINESS_CONTACT, SOLAR_PRODUCTS } from "@/lib/site-content";
 import { starterArticles } from "@/lib/solar-articles";
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Link } from "react-router";
@@ -46,14 +47,13 @@ import { HomeContactPopup } from "@/components/home-contact-popup";
 const navItems = [
   { label: "Our approach", to: "/about" as const },
   { label: "Solar solutions", to: "/services" as const },
+  { label: "Products", to: "/products" as const },
   { label: "Projects", to: "/projects" as const },
   { label: "Insights", to: "/blog" as const },
+  { label: "Contact", to: "/contact" as const },
 ];
 
 export function SiteHeader({ inverse = false }: { inverse?: boolean }) {
-  const { data: settings } = useSiteSettings();
-  const logo =
-    typeof settings?.["brand"]?.["logo"] === "string" ? String(settings["brand"]["logo"]) : "";
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -69,24 +69,10 @@ export function SiteHeader({ inverse = false }: { inverse?: boolean }) {
       className={`site-header fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${scrolled ? "is-scrolled" : inverse ? "is-inverse" : ""}`}
     >
       <div className="site-wrap flex h-[76px] items-center justify-between gap-6">
-        <Link
-          to="/"
-          aria-label="Sanmitra Solar home"
-          className="group inline-flex items-center gap-2.5"
-        >
-          {logo ? (
-            <img src={logo} alt="Sanmitra Solar" className="max-h-10 max-w-36 object-contain" />
-          ) : (
-            <span className="brand-mark">
-              <Sun aria-hidden="true" size={20} strokeWidth={2.2} />
-            </span>
-          )}
-          <span className="font-display text-[15px] font-extrabold leading-none">
-            SANMITRA<span className="brand-word-accent">.</span>
-            <span className="ml-1 text-[11px] font-semibold tracking-normal opacity-65">SOLAR</span>
-          </span>
+        <Link to="/" aria-label="Sanmitra Solar home" className="shrink-0">
+          <img src="/sanmitra-logo.png" alt="" className="site-logo h-auto w-32 lg:w-40" />
         </Link>
-        <nav aria-label="Main navigation" className="hidden items-center gap-8 lg:flex">
+        <nav aria-label="Main navigation" className="hidden items-center gap-4 lg:flex xl:gap-8">
           {navItems.map((item) => (
             <Link key={item.to} to={item.to} className="nav-link">
               {item.label}
@@ -119,7 +105,6 @@ export function SiteHeader({ inverse = false }: { inverse?: boolean }) {
           {[
             ...navItems,
             { label: "Savings estimate", to: "/calculator" as const },
-            { label: "Contact", to: "/contact" as const },
           ].map((item) => (
             <Link
               key={item.to}
@@ -137,29 +122,52 @@ export function SiteHeader({ inverse = false }: { inverse?: boolean }) {
   );
 }
 
+function BusinessContactDetails({
+  className,
+  showAddress = true,
+}: {
+  className: string;
+  showAddress?: boolean;
+}) {
+  const { phones, email, address } = BUSINESS_CONTACT;
+  return (
+    <address className={className}>
+      {showAddress && <p>{address}</p>}
+      <div className="flex flex-wrap gap-x-3">
+        {phones.map(({ label, href }) => (
+          <a key={href} className="underline underline-offset-2 hover:no-underline" href={href}>
+            {label}
+          </a>
+        ))}
+      </div>
+      <a className="break-words underline underline-offset-2 hover:no-underline" href={`mailto:${email}`}>
+        {email}
+      </a>
+    </address>
+  );
+}
+
 export function SiteFooter() {
   const { data: settings } = useSiteSettings();
   return (
     <footer className="site-footer">
       <div className="site-wrap footer-main grid gap-6 py-7 md:grid-cols-[1.2fr_1fr_1fr] md:gap-10 md:py-8">
         <div className="max-w-sm">
-          <Link to="/" className="inline-flex items-center gap-2.5">
-            <span className="brand-mark">
-              <Sun size={20} />
-            </span>
-            <span className="font-display text-base font-extrabold">
-              SANMITRA<span className="brand-word-accent">.</span> SOLAR
-            </span>
+          <Link to="/" aria-label="Sanmitra Solar home" className="inline-block">
+            <img src="/sanmitra-logo.png" alt="" className="h-auto w-48" loading="lazy" />
           </Link>
-          <p className="mt-3 text-xs leading-6 text-primary-foreground/70">
-            Solar for your home and business. Start with a clear plan.
-          </p>
+          <address className="mt-3 text-xs leading-6 text-brand-ink not-italic">
+            <a href={BUSINESS_CONTACT.directionsUrl} target="_blank" rel="noreferrer">
+              {BUSINESS_CONTACT.address}
+            </a>
+          </address>
         </div>
         <div>
           <p className="footer-label">Explore</p>
-          <div className="mt-3 grid gap-2 text-xs text-primary-foreground/80">
+          <div className="mt-3 grid gap-2 text-xs text-brand-ink">
             <Link to="/about">Our approach</Link>
             <Link to="/services">Solar solutions</Link>
+            <Link to="/products">Products</Link>
             <Link to="/projects">Projects</Link>
             <Link to="/blog">Insights</Link>
             <Link to="/gallery">Gallery</Link>
@@ -167,7 +175,7 @@ export function SiteFooter() {
         </div>
         <div>
           <p className="footer-label">Take the next step</p>
-          <div className="mt-3 grid gap-2 text-xs text-primary-foreground/80">
+          <div className="mt-3 grid gap-2 text-xs text-brand-ink">
             <Link to="/calculator">Estimate your solar potential</Link>
             <Link to="/contact">Request a conversation</Link>
             {Object.entries(settings?.["social"] ?? {})
@@ -184,9 +192,13 @@ export function SiteFooter() {
                 </a>
               ))}
           </div>
+          <BusinessContactDetails
+            className="mt-4 space-y-1 text-xs leading-6 text-brand-ink not-italic"
+            showAddress={false}
+          />
         </div>
       </div>
-      <div className="site-wrap footer-bottom flex flex-col gap-2 border-t border-primary-foreground/15 py-3 text-xs text-primary-foreground/55 sm:flex-row sm:items-center sm:justify-between">
+      <div className="site-wrap footer-bottom flex flex-col gap-2 border-t border-border py-3 text-xs text-brand-ink/75 sm:flex-row sm:items-center sm:justify-between">
         <span>© {new Date().getFullYear()} Sanmitra Solar</span>
         <span>Thoughtfully designed for a brighter energy future.</span>
       </div>
@@ -691,6 +703,60 @@ const pathways = [
   },
 ];
 
+function SolarProductList() {
+  return (
+    <section
+      id="solar-products"
+      aria-labelledby="solar-products-heading"
+      className="site-wrap scroll-mt-24 pb-16 md:pb-24"
+    >
+      <h2 id="solar-products-heading" className="section-heading mb-5">
+        Browse products
+      </h2>
+      <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        {SOLAR_PRODUCTS.map(({ name, brands }) => (
+          <li
+            key={name}
+            className={`flex flex-col items-start border border-border p-5 ${brands ? "col-span-full border-t-4 border-t-accent bg-brand-surface text-brand-ink sm:p-6" : "bg-card"}`}
+          >
+            <h3 className="text-lg font-semibold">{name}</h3>
+            {brands && (
+              <dl className="my-4 grid w-full gap-4 text-sm md:grid-cols-3">
+                {brands.map(({ category, names }) => (
+                  <div key={category} className="border-t border-border pt-3">
+                    <dt className="font-semibold">{category}</dt>
+                    <dd className="mt-1 text-muted-foreground">{names.join(", ")}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+            <Link
+              to={`/contact?service=${encodeURIComponent(name)}`}
+              className="mt-auto inline-flex items-center gap-2 pt-3 text-sm font-medium text-brand-teal hover:underline"
+              aria-label={`Enquire about ${name}`}
+            >
+              Enquire <ArrowRight size={15} aria-hidden="true" />
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+export function ProductsPage() {
+  return (
+    <PageFrame>
+      <ContentHero
+        kicker="Sanmitra Solar"
+        title="Solar products"
+        description="Explore solar equipment for your home, business or farm."
+      />
+      <SolarProductList />
+    </PageFrame>
+  );
+}
+
 export function ServicesPage() {
   const { data: services } = usePublished("services");
   const listed = services?.length
@@ -717,6 +783,7 @@ export function ServicesPage() {
           </Link>
         ))}
       </section>
+      <SolarProductList />
       <CTASection
         title="Not sure where your project fits?"
         body="Tell us a little about your property and what you’re hoping to learn."
@@ -1514,27 +1581,7 @@ export function ContactPage({
       <section className="site-wrap grid gap-12 py-10 pb-20 md:grid-cols-[0.7fr_1.3fr] md:gap-16">
         <div>
           <p className="eyebrow">Tell us a little about it</p>
-          {publicContact && (
-            <address className="mt-7 space-y-3 text-sm not-italic leading-7">
-              {Boolean(publicContact["phone"]) && (
-                <a
-                  className="block text-brand-teal"
-                  href={`tel:${String(publicContact["phone"]).replace(/[^+0-9]/g, "")}`}
-                >
-                  {String(publicContact["phone"])}
-                </a>
-              )}
-              {Boolean(publicContact["email"]) && (
-                <a
-                  className="block break-words text-brand-teal"
-                  href={`mailto:${String(publicContact["email"])}`}
-                >
-                  {String(publicContact["email"])}
-                </a>
-              )}
-              {Boolean(publicContact["address"]) && <p>{String(publicContact["address"])}</p>}
-            </address>
-          )}
+          <BusinessContactDetails className="mt-7 space-y-3 text-sm leading-7 text-brand-teal not-italic" />
           <p className="mt-5 leading-7 text-muted-foreground">
             Property type, energy costs or a question on your mind—start wherever you are.
           </p>
@@ -1688,6 +1735,27 @@ export function ContactPage({
             </p>
           </form>
         )}
+      </section>
+      <section className="site-wrap pb-16" aria-labelledby="business-location">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 id="business-location" className="section-heading">Find us</h2>
+            <p className="mt-2 text-sm text-muted-foreground">{BUSINESS_CONTACT.address}</p>
+          </div>
+          <Button asChild>
+            <a href={BUSINESS_CONTACT.directionsUrl} target="_blank" rel="noreferrer">
+              Get directions <ArrowRight size={15} aria-hidden="true" />
+            </a>
+          </Button>
+        </div>
+        <iframe
+          src={BUSINESS_CONTACT.mapEmbedUrl}
+          title="Sanmitra Solar location on Google Maps"
+          className="h-72 w-full border border-border md:h-96"
+          loading="lazy"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allowFullScreen
+        />
       </section>
     </PageFrame>
   );

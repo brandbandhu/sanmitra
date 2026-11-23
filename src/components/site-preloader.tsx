@@ -33,14 +33,7 @@ export function SitePreloader() {
   if (phase === "done") return null;
   return (
     <div className={`site-preloader ${phase === "leaving" ? "is-leaving" : ""}`} aria-hidden="true">
-      <div className="preloader-brand">
-        <span className="preloader-sun">
-          <Sun size={42} strokeWidth={1.2} />
-        </span>
-        <span className="preloader-wordmark">
-          SANMITRA<span>SOLAR</span>
-        </span>
-      </div>
+      <img src="/sanmitra-logo.png" alt="" className="h-auto w-64 max-w-[80vw]" />
       <div className="preloader-rule">
         <span />
       </div>
